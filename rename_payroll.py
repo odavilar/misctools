@@ -13,6 +13,7 @@ pdfFiles.sort(key=str.lower)
 
 regexFechaInicial = r"(?<=([0-9]{2}\/[0-9]{2}\/[0-9]{4}))Fecha inicial de pago"
 regexFechaFinal = r"(?<=([0-9]{2}\/[0-9]{2}\/[0-9]{4}))Fecha final de pago"
+regexId = r"Forma de pago(M[0-9]+)[0-9]{2}\/"
 
 for filename in pdfFiles:
 	pdfFileObj = open(filename, 'rb')
@@ -21,11 +22,13 @@ for filename in pdfFiles:
 	pageText = pageObj.extractText()
 	initialDate = re.search(regexFechaInicial, pageText).group(1)
 	finalDate = re.search(regexFechaFinal, pageText).group(1)
+	docId = re.search(regexId, pageText).group(1)
 	d,m,a = initialDate.split('/')
 	initialDate = a+m+d
 	d,m,a = finalDate.split('/')
 	finalDate = a+m+d
-	newFileName = initialDate+"_"+finalDate+".pdf"
+	newFileName = initialDate+"_"+finalDate+"_"+docId+".pdf"
 	print "Renaming file: " + filename
 	print "New filename: " + newFileName
+	pdfFileObj.close()
 	shutil.copy(filename,newFileName)
